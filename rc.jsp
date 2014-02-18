@@ -42,7 +42,7 @@ if (but!=null){
 				 barcode.setCode(fol_rec);
 				 barcode.setCheckDigit(true);
 				 BufferedImage bufferedImage = barcode.draw(new BufferedImage(100, 100, BufferedImage.TYPE_INT_RGB));
-				 File file = new File("C://Program Files (x86)/Apache Group/Tomcat 4.1/webapps/rn_v12/cb/"+fol_rec+".png");
+				 File file = new File(getServletContext().getRealPath("/cb")+"/"+fol_rec+".png");
 				 ImageIO.write(bufferedImage, "png", file);	
 		}catch (Exception e) {}
         try{
@@ -60,18 +60,27 @@ if (but!=null){
                 stmt.execute("insert into receta values ('0', '"+fol_rec+"', '-', '-', '2', '"+request.getParameter("id_usu")+"', '1', '"+encargado+"','-', '0', '0', '"+id_ser+"')");
                 rset = stmt.executeQuery("select id_rec from receta r, usuarios u where r.fol_rec = '"+fol_rec+"' and r.id_tip = '2' and r.id_usu = u.id_usu and u.cla_uni = '"+cla_uni+"' ");
                 while (rset.next()){
+						rset2 = stmt2.executeQuery("select cla_bit from bitacora where id_rec = '"+rset.getString("id_rec")+"' ");
+						int ban_bit=0;
+						
+						while(rset2.next()){
+							ban_bit=1;
+						}
+						if (ban_bit==0){
                         stmt2.execute("insert into bitacora values('0', '"+rset.getString("id_rec")+"', NOW(), '0')");
+						}
                 }
             }
         } catch (Exception e) {System.out.println(e.getMessage());}
     }
 	
 	if (but.equals("Capturar")){
+	try{
         int sol = Integer.parseInt(request.getParameter("txtf_sol1"));
         int sur = Integer.parseInt(request.getParameter("txtf_sol1"));
         int sol1=0;
         String det_pro = "";
-        try{
+        
             String id_rec="";
             rset = stmt.executeQuery("SELECT i.id_inv, DP.det_pro, P.cla_pro, P.des_pro, DP.cad_pro, DP.lot_pro, I.cant, DP.cla_fin, DP.id_ori FROM detalle_productos DP, productos P, inventario I, unidades U, usuarios US WHERE DP.cla_pro = P.cla_pro AND DP.det_pro = I.det_pro AND I.cla_uni = U.cla_uni AND US.cla_uni = U.cla_uni AND P.cla_pro = '"+request.getParameter("txtf_clave1")+"' AND US.id_usu='"+request.getParameter("id_usu")+"' ORDER BY  DP.id_ori, DP.cad_pro, I.cant ASC ");
             try{
@@ -113,7 +122,11 @@ if (but!=null){
                 stmt2.execute("insert into detreceta values ('0', '"+det_pro+"', '"+sol+"', '0', '"+df.format(df2.parse(request.getParameter("txtf_date1")))+"', '0', '"+id_rec+"', CURTIME(), '0', '0' ) ");
                 stmt2.execute("insert into kardex values ('0', '"+id_rec+"', '"+det_pro+"', '0', 'SALIDA RECETA', '-', NOW(), 'SALIDA POR RECETA COL', '"+request.getParameter("id_usu")+"', '0')");
             }
-        } catch (Exception e) {out.println(e.getMessage());}
+        } catch (Exception e) {
+			%>
+			<script>alert("Valores Incorrectos, revise su captura");</script>
+			<%
+		}
     }
 }
 %>
@@ -230,7 +243,7 @@ function validar(e) { // 1
       <tr>
         <td width="114"><img src="imagenes/nay_ima1.jpg" width="203" height="78" /></td>
         <td width="339"><div align="center"><span class="style7">SERVICIO DE SALUD DE NAYARIT<br />
-        RECETA COLECTIVA</span>*</div></td>
+        RECETA COLECTIVA</span></div></td>
         <td width="225"><div align="center"><img src="imagenes/ssn.jpg" width="219" height="89" /></div></td>
       </tr>
     </table>
@@ -370,7 +383,7 @@ function validar(e) { // 1
             <tr>
               <td class="style11">Seleccione Descripci&oacute;n:                &nbsp;&nbsp;&nbsp;</td>
               <td class="style11">
-              <select name="select_servi2" size="1"  class="style2"  onkeypress="return document.form.txtf_med1.focus();">
+              <select name="select_servi2" size="1" id="select_servi2" class="style2"  onkeypress="return document.form.txtf_med1.focus();">
                 <option selected="selected">-----Seleccione Descripción-----</option>
               <%
 			  rset = stmt.executeQuery("select cla_pro, des_pro from productos where des_pro like '%"+request.getParameter("txtf_descmed")+"%'");
@@ -404,7 +417,7 @@ function validar(e) { // 1
 				if (but!=null){
 					if (but.equals("Ver")){
 						rset = stmt.executeQuery("SELECT DP.det_pro, P.cla_pro, P.des_pro, DP.cad_pro, DP.lot_pro, sum(I.cant) as cant, DP.cla_fin FROM detalle_productos DP, productos P, inventario I, unidades U, usuarios US WHERE DP.cla_pro = P.cla_pro AND DP.det_pro = I.det_pro AND I.cla_uni = U.cla_uni AND US.cla_uni = U.cla_uni AND P.cla_pro = '"+request.getParameter("select_servi2")+"' AND US.id_usu='"+request.getParameter("id_usu")+"' and DP.id_ori='1' GROUP BY P.cla_pro ORDER BY DP.cad_pro, I.cant ASC ;");
-                        rset2 = stmt2.executeQuery("SELECT DP.det_pro, P.cla_pro, P.des_pro, DP.cad_pro, DP.lot_pro, sum(I.cant) as cant, DP.cla_fin FROM detalle_productos DP, productos P, inventario I, unidades U, usuarios US WHERE DP.cla_pro = P.cla_pro AND DP.det_pro = I.det_pro AND I.cla_uni = U.cla_uni AND US.cla_uni = U.cla_uni AND P.cla = '"+request.getParameter("select_servi2")+"' AND US.id_usu='"+request.getParameter("id_usu")+"' and DP.id_ori='2' GROUP BY P.cla_pro ORDER BY DP.cad_pro, I.cant ASC ;");
+                        rset2 = stmt2.executeQuery("SELECT DP.det_pro, P.cla_pro, P.des_pro, DP.cad_pro, DP.lot_pro, sum(I.cant) as cant, DP.cla_fin FROM detalle_productos DP, productos P, inventario I, unidades U, usuarios US WHERE DP.cla_pro = P.cla_pro AND DP.det_pro = I.det_pro AND I.cla_uni = U.cla_uni AND US.cla_uni = U.cla_uni AND P.cla_pro = '"+request.getParameter("select_servi2")+"' AND US.id_usu='"+request.getParameter("id_usu")+"' and DP.id_ori='2' GROUP BY P.cla_pro ORDER BY DP.cad_pro, I.cant ASC ;");
 					}
 					if (but.equals("Clave")) {
 						rset = stmt.executeQuery("SELECT DP.det_pro, P.cla_pro, P.des_pro, DP.cad_pro, DP.lot_pro, sum(I.cant) as cant, DP.cla_fin FROM detalle_productos DP, productos P, inventario I, unidades U, usuarios US WHERE DP.cla_pro = P.cla_pro AND DP.det_pro = I.det_pro AND I.cla_uni = U.cla_uni AND US.cla_uni = U.cla_uni AND P.cla_pro = '"+request.getParameter("txtf_med1")+"' AND US.id_usu='"+request.getParameter("id_usu")+"' and DP.id_ori='1' GROUP BY P.cla_pro ORDER BY DP.cad_pro, I.cant ASC ;");
@@ -436,13 +449,28 @@ function validar(e) { // 1
                Origen 2=<%=cantidad%>
                <%
 				if (ban_cla==0&&but!=null&&but.equals("Clave")){
-					%>
-					<script>
-					alert('Insumo sin existencia');
-					</script>
-					<%
-				}
+										%>
+                                        <script>
+										alert('Insumo sin existencia, quedará como pendiente por surtir');
+										</script>
+                                        <%
+										stmt.execute("insert into detalle_productos values ('0', '"+request.getParameter("txtf_med1")+"', '-', '2050-01-01', '1', '2', '0');");
+										rset = stmt.executeQuery("select det_pro from detalle_productos where cla_pro = '"+request.getParameter("txtf_med1")+"' and lot_pro = '-' and cad_pro = '2050-01-01' ");
+										while(rset.next()){
+											stmt2.execute("insert into inventario values (CURDATE(), '"+cla_uni+"', '"+rset.getString("det_pro")+"', '0', '0', '0')");
+										}
+										clave=""; descr=""; fuente = ""; cantidad = "0"; det_pro="";
+                                        rset = stmt.executeQuery("SELECT DP.det_pro, P.cla_pro, P.des_pro, DP.cad_pro, DP.lot_pro, sum(I.cant) as cant, DP.cla_fin FROM detalle_productos DP, productos P, inventario I, unidades U, usuarios US WHERE DP.cla_pro = P.cla_pro AND DP.det_pro = I.det_pro AND I.cla_uni = U.cla_uni AND US.cla_uni = U.cla_uni AND P.cla_pro = '"+request.getParameter("txtf_med1")+"' AND US.id_usu='"+request.getParameter("id_usu")+"' GROUP BY P.cla_pro ORDER BY DP.cad_pro, I.cant ASC ;");
+                                            while(rset.next()){
+                                                clave = rset.getString("cla_pro");
+                                                descr = rset.getString("des_pro");
+                                                cantidad = rset.getString("cant");
+                                                fuente = rset.getString("cla_fin");
+                                                det_pro = rset.getString("det_pro");
+                                            }
+										}
 				%>
+				
                </span></span></td>
               <td colspan="2" class="style11"><label>
                 <div align="center">
@@ -470,7 +498,7 @@ function validar(e) { // 1
               <td colspan="3" class="style11"><div align="center">&nbsp;</div></td>
               <td colspan="2" class="style11">&nbsp;
               
-              <input name="submit" type="submit" id="capturaid" class="but" value="Capturar" onClick="return verifica_RC(document.forms.form);" onChange="setSur(this.form)"/></td>
+              <input name="submit" type="submit" id="capturaid" class="but" value="Capturar" onClick="return valida_clave();" onChange="setSur(this.form)"/></td>
              <tr class="letras">
               <td colspan="9" class="style11"><hr /></td>
             </tr>
@@ -490,9 +518,11 @@ function validar(e) { // 1
             </tr>
    
               <%
+			  int ban_imp2=0;
                             try{
                             rset = stmt.executeQuery("SELECT dr.fol_det, p.cla_pro, p.des_pro, dp.lot_pro, dp.cad_pro, dr.can_sol, dr.cant_sur, dr.status, o.des_ori from productos p, detalle_productos dp, detreceta dr, receta r, origen o where p.cla_pro = dp.cla_pro and dp.det_pro = dr.det_pro AND dr.id_rec = r.id_rec AND dp.id_ori = o.id_ori AND dr.baja='0' and r.fol_rec = '"+request.getParameter("txtf_foliore")+"' ;");
                             while(rset.next()){
+							ban_imp2=1;
                             %>
                             <tr>
                                 <td class="style2"><%=rset.getString("cla_pro")%></td>
@@ -530,9 +560,15 @@ function validar(e) { // 1
                                 <td class="style11">&nbsp;</td>
                                 <td class="style11">&nbsp;</td>
                                 <td class="style11"><div >
+								<%
+								if (ban_imp2==1) {
+								%>
                                   <p>
                                     <a href="ticket_c.jsp?fol_rec=<%=fol_rec%>&id_usu=<%=request.getParameter("id_usu")%>&tipo=<%=request.getParameter("tipo")%>">Imprimir</a>
                                   </p>
+								  <%
+								  }
+								  %>
                                     </div>
                                 </td>
               </tr>
@@ -563,6 +599,14 @@ function validar(e) { // 1
 
 <script src="jqry/jquery-1.9.1.js"></script>
 <script src="jqry/jquery-ui-1.10.3.custom.js"></script>
+<script>
+function valida_clave(){
+	if(document.form.txtf_sol1.value == ""{
+		return false;
+	} 
+	return true;
+}
+</script>
 <script>
 
 	function foco_inicial() {

@@ -47,22 +47,13 @@ cod_pac="";
 
 if (but!=null){
     if (but.equals("Mostrar")){
-        int ban1=0;
         rset = stmt.executeQuery("select id_rec from receta r, usuarios u where r.fol_rec = '"+fol_rec+"' and r.id_tip = '1' and r.id_usu = u.id_usu and u.cla_uni = '"+cla_uni+"' ");
         while(rset.next()){
-            ban1=1;
 			//response.sendRedirect("rf.jsp?id_usu="+request.getParameter("id_usu")+"&tipo="+request.getParameter("tipo"));
 			out.println("<script>alert('Receta ya capturada')</script>");
 			out.println("<script>location.href=('rf.jsp?id_usu="+request.getParameter("id_usu")+"&tipo="+request.getParameter("tipo")+"');</script>");
         }
-        if (ban1==1) {
-            %>
-            <!--script>
-                alert("Receta ya capturada");
-                window.locationf="rf.jsp";
-            </script-->
-            <%
-        }
+        
     }
     if (but.equals("Médico")){
 		rset = stmt.executeQuery("select id_rec from receta r, usuarios u where r.fol_rec = '"+fol_rec+"' and r.id_tip = '1' and r.id_usu = u.id_usu and u.cla_uni = '"+cla_uni+"' ");
@@ -75,7 +66,7 @@ if (but!=null){
 				 barcode.setCode(fol_rec);
 				 barcode.setCheckDigit(true);
 				 BufferedImage bufferedImage = barcode.draw(new BufferedImage(100, 100, BufferedImage.TYPE_INT_RGB));
-				 File file = new File("C://Program Files/Apache Group/Tomcat 4.1/webapps/rn_v12/cb/"+fol_rec+".png");
+				 File file = new File(getServletContext().getRealPath("/cb")+"/"+fol_rec+".png");
 				 ImageIO.write(bufferedImage, "png", file);	
 		}catch (Exception e) {}
         try{
@@ -102,11 +93,11 @@ if (but!=null){
     }
 
     if (but.equals("Capturar")){
+        try{
         int sol = Integer.parseInt(request.getParameter("txtf_sol1"));
         int sur = Integer.parseInt(request.getParameter("txtf_sol1"));
         int sol1=0;
         String det_pro = "";
-        try{
             String id_rec="";
             rset = stmt.executeQuery("SELECT i.id_inv, DP.det_pro, P.cla_pro, P.des_pro, DP.cad_pro, DP.lot_pro, I.cant, DP.cla_fin, DP.id_ori FROM detalle_productos DP, productos P, inventario I, unidades U, usuarios US WHERE DP.cla_pro = P.cla_pro AND DP.det_pro = I.det_pro AND I.cla_uni = U.cla_uni AND US.cla_uni = U.cla_uni AND P.cla_pro = '"+request.getParameter("txtf_clave1")+"' AND US.id_usu='"+request.getParameter("id_usu")+"' ORDER BY  DP.id_ori, DP.cad_pro, I.cant ASC ");
             try{
@@ -152,7 +143,11 @@ if (but!=null){
                 stmt2.execute("insert into detreceta values ('0', '"+det_pro+"', '"+sol+"', '0', '"+df.format(df2.parse(request.getParameter("txtf_date1")))+"', '0', '"+id_rec+"', CURTIME(), '0', '0' ) ");
                 stmt2.execute("insert into kardex values ('0', '"+id_rec+"', '"+det_pro+"', '0', 'SALIDA RECETA', '-', NOW(), 'SALIDA POR RECETA FAR', '"+request.getParameter("id_usu")+"', '0')");
             }
-        } catch (Exception e) {out.println(e.getMessage());}
+        } catch (Exception e) {
+			%>
+			<script>alert("Valores Incorrectos, revise su captura");</script>
+			<%
+		}
     }
 }
 
@@ -162,7 +157,7 @@ try{
 		while (rset.next()){
 			nom_pac = rset.getString("nom_pac");
 			sex_pac = rset.getString("sexo");
-			fec_nac = rset.getString("fec_nac");
+			fec_nac = df2.format(df.parse(rset.getString("fec_nac")));
 			folio_sp = rset.getString("num_afi");
 			med1=rset.getString("nom_med");
 			med2=rset.getString("cedula");
@@ -325,21 +320,38 @@ try{
                     <td height="91" colspan="3" class="style4"><table width="901" border="0" align="center" cellpadding="2">
                             <tr>
                                 <td height="27" colspan="5" class="style2">Introduzca C&oacute;digo  Paciente: 
-                                    <input name="txtf_cb" type="text" id="txtf_cb"  onchange="" value="<%=cod_pac%>" onkeypress="return handleEnter(this, event)"/>
+                                    <input name="txtf_cb" type="text" id="txtf_cb"  onchange="" value="<%=cod_pac%>" onKeyPress="return handleEnter(this, event)"/>
                                     <input name="submit" type="submit" class="subHeader" value="Mostrar" onClick="return verifica_FOLIO(document.forms.form);"/>&nbsp;&nbsp;
                                     <select name="slct_afiliados" id="slct_afiliados" class="style2" onkeypress="return handleEnter(this, event)" onChange="putNom(this.form)">
                                         <option>---- AFILIADOS------</option>
                                         <%
 										try{
+										int ban_pac=0;
                                         rset = stmt.executeQuery("select nom_pac, num_afi, fec_nac, fin_vig, sexo from pacientes where num_afi = '"+request.getParameter("txtf_cb")+"'");
                                         while (rset.next()){
+											ban_pac=1;
 											if ( (new Date()).before(df.parse(rset.getString("fin_vig"))) ){
-												out.println("<option value = '"+rset.getString("nom_pac")+","+rset.getString("fec_nac")+","+rset.getString("sexo")+","+rset.getString("num_afi")+","+rset.getString("fin_vig")+"'>"+rset.getString("nom_pac")+"</option>");
+												out.println("<option value = '"+rset.getString("nom_pac")+","+df2.format(df.parse(rset.getString("fec_nac")))+","+rset.getString("sexo")+","+rset.getString("num_afi")+","+rset.getString("fin_vig")+"'>"+rset.getString("nom_pac")+"</option>");
 											} else {
-												out.println("<option value = '"+rset.getString("nom_pac")+","+rset.getString("fec_nac")+","+rset.getString("sexo")+","+rset.getString("num_afi")+","+rset.getString("fin_vig")+",true'>"+rset.getString("nom_pac")+"</option>");
+												out.println("<option value = '"+rset.getString("nom_pac")+","+df2.format(df.parse(rset.getString("fec_nac")))+","+rset.getString("sexo")+","+rset.getString("num_afi")+","+rset.getString("fin_vig")+",true'>"+rset.getString("nom_pac")+"</option>");
 											}
                                         }
-										}catch (Exception e) {}
+										if (ban_pac==0){
+											if (but!=null){
+												if (but.equals("Mostrar")){
+													out.println("<script>alert('Paciente Inexistente')</script>");
+													cod_pac="";
+													nom_pac="";
+													car_pac="";
+													sex_pac="";
+													fec_nac="";
+													folio_sp="";
+													}
+												}
+												
+											}
+										}catch (Exception e) {
+										}
                                         %>
                                         <span class="style2">AFILIADOS
                                     </select>
@@ -366,10 +378,10 @@ try{
                                             <td width="129">
                                                 <div align="left"><span class="style2">
                                                         Fecha Nac:</span><span class="style2">
-                                                        <input name="txtf_edad" type="text" class="style13" value="<%=fec_nac%>" size="15"  onkeypress="return handleEnter(this, event)" readonly/>
+                                                        
                                                     </span>
                                                 </div>
-                                            </td>
+                                            </td><input name="txtf_edad" type="text" class="style13" value="<%=fec_nac%>" size="15"  onkeypress="return handleEnter(this, event)" readonly/>
                                         </tr>
                                     </table>
                                 </td>
@@ -411,7 +423,7 @@ try{
 									ced_med="";
 								}
 								%>
-                                    <input name="txtf_medico" type="text" size="10" value="<%=ced_med%>" onchange="" onKeyPress="return handleEnter(this, event)" />
+                                    <input name="txtf_medico" type="text" size="10" value="<%=ced_med%>" onChange="" onKeyPress="return handleEnter(this, event)" />
                                     <input name="submit" type="submit" class="subHeader" value="Médico" onClick="return verifica_FOLIO(document.forms.form);" />
                                     <%
                                     try{
@@ -466,9 +478,23 @@ try{
 										if (ban_cla==0&&but!=null&&but.equals("Clave")){
 										%>
                                         <script>
-										alert('Insumo sin existencia');
+										alert('Insumo sin existencia, quedará como pendiente por surtir');
 										</script>
                                         <%
+										stmt.execute("insert into detalle_productos values ('0', '"+request.getParameter("txtf_med1")+"', '-', '2050-01-01', '1', '2', '0');");
+										rset = stmt.executeQuery("select det_pro from detalle_productos where cla_pro = '"+request.getParameter("txtf_med1")+"' and lot_pro = '-' and cad_pro = '2050-01-01' ");
+										while(rset.next()){
+											stmt2.execute("insert into inventario values (CURDATE(), '"+cla_uni+"', '"+rset.getString("det_pro")+"', '0', '0', '0')");
+										}
+										clave=""; descr=""; fuente = ""; cantidad = "0"; det_pro="";
+                                        rset = stmt.executeQuery("SELECT DP.det_pro, P.cla_pro, P.des_pro, DP.cad_pro, DP.lot_pro, sum(I.cant) as cant, DP.cla_fin FROM detalle_productos DP, productos P, inventario I, unidades U, usuarios US WHERE DP.cla_pro = P.cla_pro AND DP.det_pro = I.det_pro AND I.cla_uni = U.cla_uni AND US.cla_uni = U.cla_uni AND P.cla_pro = '"+request.getParameter("txtf_med1")+"' AND US.id_usu='"+request.getParameter("id_usu")+"' GROUP BY P.cla_pro ORDER BY DP.cad_pro, I.cant ASC ;");
+                                            while(rset.next()){
+                                                clave = rset.getString("cla_pro");
+                                                descr = rset.getString("des_pro");
+                                                cantidad = rset.getString("cant");
+                                                fuente = rset.getString("cla_fin");
+                                                det_pro = rset.getString("det_pro");
+                                            }
 										}
 										%>
                                         <span class="Estilo5">
@@ -551,7 +577,7 @@ try{
                                     <textarea name="txtf_descrip1" cols="50"  class="style2" readonly><%=descr%></textarea>
                                 </td>
                                 <td class="style11">
-                                    <input type="text" name="txtf_sol1" id="txtf_sol1" size="5" value="0" onKeyPress="return handleEnter(this, event)"  />
+                                    <input type="text" name="txtf_sol1" id="txtf_sol1" size="5" onKeyPress="return handleEnter(this, event)"  />
                                 </td>
                                 <td colspan="2" class="style11">
                                     <input type="text" name="txtf_sur1" size="5" value="0"  onchange="setSur(this.form)" onKeyPress="return handleEnter(this, event)" readonly/>
@@ -585,9 +611,11 @@ try{
                                 <td colspan="9" class="style11"><hr /></td>
                             </tr>
                             <%
+							int ban_imp2=0;
                             try{
                             rset = stmt.executeQuery("SELECT dr.fol_det, p.cla_pro, p.des_pro, dp.lot_pro, dp.cad_pro, dr.can_sol, dr.cant_sur, dr.status, o.des_ori from productos p, detalle_productos dp, detreceta dr, receta r, origen o where dr.baja !='1' and p.cla_pro = dp.cla_pro and dp.det_pro = dr.det_pro AND dr.id_rec = r.id_rec AND dp.id_ori = o.id_ori AND r.fol_rec = '"+request.getParameter("txtf_foliore")+"' and r.id_usu = '"+request.getParameter("id_usu")+"' ;");
                             while(rset.next()){
+							ban_imp2=1;
                             %>
                             <tr>
                                 <td class="style2"><%=rset.getString("cla_pro")%></td>
@@ -605,7 +633,7 @@ try{
                                 <td class="style2"><%=rset.getString("status")%></td>
                                 <td class="style2"><%=rset.getString("des_ori")%></td>
                                 <td class="style2">
-                                    <a href = "eliminar_rf.jsp?fol_det=<%=rset.getString("fol_det")%>&id_usu=<%=request.getParameter("id_usu")%>&txtf_foliore=<%=fol_rec%>">Eliminar</a>
+                                    <a href = "eliminar_rf.jsp?fol_det=<%=rset.getString("fol_det")%>&id_usu=<%=request.getParameter("id_usu")%>&txtf_foliore=<%=fol_rec%>&txtf_cb=<%=cod_pac%>&txtf_medico=<%=ced_med%>">Eliminar</a>
                                 </td>
                             </tr>
                             <%
@@ -626,7 +654,13 @@ try{
                                 <td class="style11">&nbsp;</td>
                                 <td class="style11"><div >
                                   <p>
+								  <%
+								  if (ban_imp2==1){
+								  %>
                                     <a href="ticket.jsp?fol_rec=<%=fol_rec%>&id_usu=<%=request.getParameter("id_usu")%>&tipo=<%=request.getParameter("tipo")%>">Imprimir</a>
+									<%
+									}
+									%>
                                   </p>
                                     </div>
                                 </td>

@@ -35,7 +35,7 @@
 
 <body>
 <div align="left"><img src="imagenes/nay_ima1.jpg" width="228" height="79" /><br /><br />
-<span class="style3">DE CLIC EN CLAVE DE LA UNIDAD DESEADA</span>*</div>
+<span class="style3">DE CLIC EN CLAVE DE LA UNIDAD DESEADA</span></div>
 <table width="384" border="1">
  
   <tr>

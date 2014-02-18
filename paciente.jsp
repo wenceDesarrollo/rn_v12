@@ -13,6 +13,7 @@ ResultSet rset=null;
 // fin conexión --------
 String no_af="";
 String but="", nombre="", fec_nac="";
+int ban=1;
 try{
         but=request.getParameter("submit");
 } catch (Exception e){
@@ -32,8 +33,9 @@ if (but!=null){
 		try{
         stmt.execute("insert into pacientes values ('"+nombre+"', '"+fec_nac+"', '"+request.getParameter("slct_sexo")+"', '"+no_af+"', '"+request.getParameter("programa")+"', '"+ini_vig+"', '"+fin_vig+"', '0')");
 		} catch(Exception e){
+			ban=0;
 			%>
-				<script>alert("Paciente ya capturado")</script>
+				<script>alert("Error al guardar al paciente, puede estar ya capturado o tener algún dato erroneo")</script>
 				<script>window.locationf="paciente.jsp";</script>
 			<%
 		}
@@ -85,7 +87,7 @@ if (but!=null){
         <link rel="stylesheet" href="mm_restaurant1.css" type="text/css" />
     </head>
 
-    <body onLoad="inicio()">
+    <body onLoad="inicio();foco_inicial();">
         <form id="form" name="form" method="post" action="paciente.jsp?id_usu=<%=request.getParameter("id_usu")%>">
             <table width="650" height="335" border="3" align="center" cellpadding="2" bgcolor="#FFFFFF">
                 <tr>
@@ -112,7 +114,7 @@ if (but!=null){
                                         <label></label>
                                     </span><div align="left" class="Estilo1"><strong>No. AFILIACION</strong>:
                                     </div></td>
-                                <td width="158"><input name="txtf_noaf" type="text" id="txtf_noaf"  onKeyPress="validar(event);"/></td>
+                                <td width="158"><input name="txtf_noaf" type="text" id="txtf_noaf"   onKeyPress="return handleEnter(this, event)"/></td>
                                 <td><div id="mensaje" >Se generar&aacute; Autom&aacute;ticamente el no. de Afiliaci&oacute;n</div></td>
                             </tr>
                             <tr>
@@ -121,7 +123,7 @@ if (but!=null){
                                         <label></label>
                                     </div></td>
                                 <td><span class="bodyText"><span class="style5">
-                                            <input name="txtf_nom" type="text" id="txtf_nom" onKeyPress="return handleEnter(this, event)" onChange="mayNom(this.form)"/>
+                                            <input name="txtf_nom" type="text" id="txtf_nom"  onKeyPress="return handleEnter(this, event)" onChange="mayNom(this.form)"/>
                                         </span></span></td>
                                 <td>&nbsp;</td>
                             </tr>
@@ -150,11 +152,18 @@ if (but!=null){
                                 <td class="bodyText"><div align="left" class="Estilo1">FECHA DE NACIMIENTO: </div></td>
                                 <td><span class="bodyText"><div align="left" class="Estilo1">
 
-                                            <input name="txtf_t1a" id="txtf_t1a" type="text" onKeyPress="return handleEnter(this, event)" onKeyUp="putDaysa()"  size="1" maxlength="2"/>
+                                            <input name="txtf_t1a" id="txtf_t1a" type="text" onKeyPress="return handleEnter(this, event)" onKeyUp="putDaysa()"  size="2" maxlength="2"/>
                                             <strong>                    /</strong>
-                                            <input name="txtf_t2a" id="txtf_t2a" type="text" size="1" maxlength="2" onKeyUp="putMonthssa()"  onKeyPress="return handleEnter(this, event)" />
+                                            <input name="txtf_t2a" id="txtf_t2a" type="text" size="2" maxlength="2" onKeyUp="putMonthssa()"  onKeyPress="return handleEnter(this, event)" />
                                             <strong>                    /</strong>
-                                            <input name="txtf_t3a" id="txtf_t3a" type="text" size="2" maxlength="4" onKeyUp="putYearssa(this.form)" onKeyPress="return handleEnter(this, event)" />
+                                            <select name="txtf_t3a" id="txtf_t3a" onKeyPress="return handleEnter(this, event)" >
+											<%
+											for (int a=1900;a<2014;a++){
+												out.println("<option value='"+a+"' >"+a+"</option>");
+											}
+											%>
+											</select>
+											
                                         </div></span></td>
                                 <td>&nbsp;</td>
                             </tr>
@@ -174,7 +183,7 @@ if (but!=null){
                             <tr>
                                 <th height="23" scope="row">&nbsp;</th>
                                 <td class="style5"><div align="left" class="Estilo1">PROGRAMA: </div></td>
-                                <td class="style5"><select name="programa" class="style13" id="programa" onChange="tipo_ser(this.value);" >
+                                <td class="style5"><select name="programa" class="style13" id="programa" onChange="tipo_ser(this.value);tipo();" >
                                         <option value="SP">SEGURO POPULAR</option>
                                         <option value="PA">POBLACION ABIERTA</option>
                                         <option value="OP">OPORTUNIDADES</option>
@@ -192,11 +201,17 @@ if (but!=null){
                                 <td><div align="left" class="Estilo1"><strong>FECHA DE INICIO VIGENCIA </strong>: </div></td>
                                 <td><div align="left" class="Estilo1" id="f_ini_div">
 
-                                        <input name="txtf_t1b" type="text" id="fechadia_id" onKeyPress="return handleEnter(this, event)" onKeyUp="putDaysb()"  size="1" maxlength="2"/>
+                                        <input name="txtf_t1b" type="text" id="fechadia_id" onKeyPress="return handleEnter(this, event)" onKeyUp="putDaysb()"  size="2" maxlength="2"/>
                                         <strong>                    /</strong>
-                                        <input name="txtf_t2b" type="text" id="fechames_id" size="1" maxlength="2" onKeyUp="putMonthssb()"  onKeyPress="return handleEnter(this, event)" />
+                                        <input name="txtf_t2b" type="text" id="fechames_id" size="2" maxlength="2" onKeyUp="putMonthssb()"  onKeyPress="return handleEnter(this, event)" />
                                         <strong>                    /</strong>
-                                        <input name="txtf_t3b" type="text" id="fechaano_id" size="2" maxlength="4" onKeyUp="putYearssb(this.form)"  onKeyPress="return handleEnter(this, event)" />
+                                        <select name="txtf_t3b" id="fechaano_id" onKeyUp="putYearssb(this.form)" onKeyPress="return handleEnter(this, event)" >
+										<%
+										for (int a=2005;a<2020;a++){
+											out.println("<option value='"+a+"' >"+a+"</option>");
+										}
+										%>
+										</select>
                                     </div></td>
                                 <td>&nbsp;</td>
                             </tr>
@@ -205,11 +220,17 @@ if (but!=null){
                                 <td><div align="left" class="Estilo1"><strong>FECHA DE FIN VIGENCIA </strong>:</span></div></td>
                                 <td><div align="left" class="Estilo1" id="f_fin_div">
 
-                                        <input name="txtf_t1c" id="fecha_diav" type="text" onKeyPress="return handleEnter(this, event)" onKeyUp="putDaysc()"  size="1" maxlength="2"/>
+                                        <input name="txtf_t1c" id="fecha_diav" type="text" onKeyPress="return handleEnter(this, event)" onKeyUp="putDaysc()"  size="2" maxlength="2"/>
                                         <strong>                    /</strong>
-                                        <input name="txtf_t2c"  id="fecha_mesv" type="text" size="1" maxlength="2" onKeyUp="putMonthssc()"  onKeyPress="return handleEnter(this, event)" />
+                                        <input name="txtf_t2c"  id="fecha_mesv" type="text" size="2" maxlength="2" onKeyUp="putMonthssc()"  onKeyPress="return handleEnter(this, event)" />
                                         <strong>                    /</strong>
-                                        <input name="txtf_t3c"  id="fecha_anov" type="text" size="2" maxlength="4" onKeyUp="putYearssc(this.form)"  onKeyPress="return handleEnter(this, event)" />
+                                        <select name="txtf_t3c"  id="fecha_anov" onKeyUp="putYearssc(this.form)"  onKeyPress="return handleEnter(this, event)" >
+										<%
+										for (int a=2005;a<2020;a++){
+											out.println("<option value='"+a+"' >"+a+"</option>");
+										}
+										%>
+										</select>
                                     </div></td>
                                 <td>&nbsp;</td>
                             </tr>
@@ -230,7 +251,7 @@ if (but!=null){
                                 <td colspan="2"><div align="left">
 
                                         <%
-										if (but!=null){
+										if (but!=null&&ban==1){
                                                     if(but.equals("Guardar")){
                                                             out.print("Paciente Capturado:<br>");
                                                             out.print("No de Afiliación: "+no_af);
@@ -255,3 +276,13 @@ if (but!=null){
         %>
     </body>
 </html>
+<script>
+function foco_inicial(){
+	if (document.getElementById('txtf_noaf').value==""){
+		document.getElementById('txtf_noaf').focus();
+	}
+}
+function tipo(){
+	document.getElementById('txtf_nom').focus();
+}
+</script>

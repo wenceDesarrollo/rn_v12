@@ -330,7 +330,7 @@ try{
                                 </tr>
                                 <tr>
                                     <th colspan="10" class="FECHA">
-                                        <hr/>
+									<hr/>
                                     </th>
                                 </tr>
                                 </thead>
@@ -338,6 +338,7 @@ try{
                                 <!--Loop start, you could use a repeat region here-->
                                 <%
 								try{
+								
 								rset = stmt.executeQuery("SELECT r.fol_rec, k.fol_aba, k.cant, k.tipo_mov, k.obser, dp.id_ori, us.nombre, k.fecha FROM unidades un, usuarios us, kardex k, detalle_productos dp, productos p, receta r WHERE un.cla_uni = us.cla_uni AND us.id_usu = k.id_usu AND k.det_pro = dp.det_pro AND dp.cla_pro = p.cla_pro AND k.id_rec = r.id_rec AND p.cla_pro = '"+request.getParameter("cla_pro")+"' AND dp.lot_pro = '"+request.getParameter("lot_pro")+"' AND dp.cad_pro = '"+df.format(df2.parse(request.getParameter("cad_pro")))+"' AND dp.id_ori = '"+request.getParameter("id_ori")+"' ;");
 								while(rset.next()){
 									try{

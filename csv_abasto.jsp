@@ -37,6 +37,15 @@ try{
 	}
 } catch (Exception e) {out.println(e.getMessage());}
 //------------------------------------------------------------------
+int ban_invini=0;
+try{
+	rset = stmt.executeQuery("select id_inv from inventario_inicial");
+	while (rset.next()) {
+			ban_invini = 1;
+			break;
+	}
+} catch (Exception e) {out.println(e.getMessage());}
+//------------------------------------------------------------------
 try{
 	rset = stmt.executeQuery("select fol_aba from kardex where fol_aba='" + token + "'");
 	while (rset.next()) {
@@ -99,6 +108,9 @@ if (existe_abasto == 1) {
 										detalle=rset.getString("det_pro");
 								}
 								stmt.execute("insert into inventario values (NOW(), '"+cla_uni+"', '"+detalle+"', '"+reader.get(4)+"', '0', '0')");
+								if (ban_invini==0){
+									stmt.execute("insert into inventario_inical values (NOW(), '"+cla_uni+"', '"+detalle+"', '"+reader.get(4)+"', '0', '0')");
+								}
 								rset=stmt.executeQuery("select p.cla_pro, p.des_pro, dp.lot_pro, dp.cad_pro, i.cant, i.id_inv, o.des_ori, dp.det_pro FROM usuarios us, unidades u, inventario i, detalle_productos dp, productos p, origen o where  us.cla_uni = u.cla_uni and u.cla_uni = i.cla_uni AND i.det_pro = dp.det_pro and dp.cla_pro = p.cla_pro AND dp.id_ori = o.id_ori and us.id_usu = '"+request.getParameter("id_usu")+"' and p.cla_pro='"+reader.get(0)+"' and dp.lot_pro='"+reader.get(2)+"' and dp.cad_pro='"+df.format(df2.parse(reader.get(3)))+"' ");
 								while(rset.next()){
 										tipo_en=1;

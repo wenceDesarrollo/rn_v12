@@ -29,7 +29,7 @@ while(rset.next()){
 	stmt2.execute(("update detreceta set baja = '1', can_sol = '0', cant_sur = '0' where fol_det = '"+request.getParameter("fol_det")+"'"));
 	
 }
-response.sendRedirect("rf.jsp?tipo=RFA&id_usu="+request.getParameter("id_usu")+"&txtf_foliore="+request.getParameter("txtf_foliore")+"&receta_cap=1");
+response.sendRedirect("rf.jsp?tipo=RFA&id_usu="+request.getParameter("id_usu")+"&txtf_foliore="+request.getParameter("txtf_foliore")+"&receta_cap=1&txtf_cb="+request.getParameter("txtf_cb")+"&txtf_medico="+request.getParameter("txtf_medico"));
 
 con.close();
 %>

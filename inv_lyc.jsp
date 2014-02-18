@@ -10,7 +10,7 @@ Statement stmt = con.createStatement();
 ResultSet rset=null;
 // fin conexion --------
 String lote="", caduca_mes="", but="";
-rset = stmt.executeQuery("select p.cla_pro, p.des_pro, dp.lot_pro, dp.cad_pro, i.cant, o.des_ori FROM unidades u, inventario i, detalle_productos dp, productos p, origen o where u.cla_uni = i.cla_uni AND i.det_pro = dp.det_pro and dp.cla_pro = p.cla_pro AND dp.id_ori = o.id_ori ");
+rset = stmt.executeQuery("select p.cla_pro, p.des_pro, dp.lot_pro, dp.cad_pro, i.cant, o.des_ori FROM unidades u, inventario i, detalle_productos dp, productos p, origen o where u.cla_uni = i.cla_uni AND i.det_pro = dp.det_pro and dp.cla_pro = p.cla_pro AND dp.id_ori = o.id_ori order by p.cla_pro+0 ");
 
 try {
 	but = "" + request.getParameter("submit");
@@ -26,17 +26,24 @@ try {
 	String fecha_act=""+df.format(calendar.getTime());
 	if (but.equals("Omitir Existencias en 0")){
 		if (lote.equals("on")){
-			rset = stmt.executeQuery("select p.cla_pro, p.des_pro, dp.lot_pro, dp.cad_pro,  i.cant, o.des_ori FROM unidades u, inventario i, detalle_productos dp, productos p, origen o where u.cla_uni = i.cla_uni AND i.det_pro = dp.det_pro and dp.cla_pro = p.cla_pro AND dp.id_ori = o.id_ori  and dp.cad_pro < '"+fecha_act+"' and i.cant != 0 order by p.cla_pro asc ");
+			rset = stmt.executeQuery("select p.cla_pro, p.des_pro, dp.lot_pro, dp.cad_pro,  i.cant, o.des_ori FROM unidades u, inventario i, detalle_productos dp, productos p, origen o where u.cla_uni = i.cla_uni AND i.det_pro = dp.det_pro and dp.cla_pro = p.cla_pro AND dp.id_ori = o.id_ori  and dp.cad_pro < '"+fecha_act+"' and i.cant != 0 order by p.cla_pro+0 asc ");
 		} else {
-			rset = stmt.executeQuery("select p.cla_pro, p.des_pro, dp.lot_pro, dp.cad_pro,  sum(i.cant) as cant, o.des_ori FROM unidades u, inventario i, detalle_productos dp, productos p, origen o where u.cla_uni = i.cla_uni AND i.det_pro = dp.det_pro and dp.cla_pro = p.cla_pro AND dp.id_ori = o.id_ori and  dp.cad_pro < '"+fecha_act+"' and i.cant != 0 group by p.cla_pro order by p.cla_pro asc");
+			rset = stmt.executeQuery("select p.cla_pro, p.des_pro, dp.lot_pro, dp.cad_pro,  sum(i.cant) as cant, o.des_ori FROM unidades u, inventario i, detalle_productos dp, productos p, origen o where u.cla_uni = i.cla_uni AND i.det_pro = dp.det_pro and dp.cla_pro = p.cla_pro AND dp.id_ori = o.id_ori and  dp.cad_pro < '"+fecha_act+"' and i.cant != 0 group by p.cla_pro order by p.cla_pro+0 asc");
 		}
-	} if (but.equals("Existencias con 0")){
+	} if (but.equals("Lote")){
 		if (lote.equals("on")){
-			rset = stmt.executeQuery("select p.cla_pro, p.des_pro, dp.lot_pro, dp.cad_pro, i.cant, o.des_ori FROM unidades u, inventario i, detalle_productos dp, productos p, origen o where u.cla_uni = i.cla_uni AND i.det_pro = dp.det_pro and dp.cla_pro = p.cla_pro AND dp.id_ori = o.id_ori  and dp.cad_pro < '"+fecha_act+"' order by p.cla_pro asc");
+			rset = stmt.executeQuery("select p.cla_pro, p.des_pro, dp.lot_pro, dp.cad_pro, i.cant, o.des_ori FROM unidades u, inventario i, detalle_productos dp, productos p, origen o where u.cla_uni = i.cla_uni AND i.det_pro = dp.det_pro and dp.cla_pro = p.cla_pro AND i.cant!=0 and dp.id_ori = o.id_ori  and dp.cad_pro < '"+fecha_act+"' order by p.cla_pro+0 asc");
 		} else {
-			rset = stmt.executeQuery("select p.cla_pro, p.des_pro, dp.lot_pro, dp.cad_pro,  sum(i.cant) as cant, o.des_ori FROM unidades u, inventario i, detalle_productos dp, productos p, origen o where u.cla_uni = i.cla_uni AND i.det_pro = dp.det_pro and dp.cla_pro = p.cla_pro AND dp.id_ori = o.id_ori  and dp.cad_pro < '"+fecha_act+"'  group by p.cla_pro order by p.cla_pro asc");
+			rset = stmt.executeQuery("select p.cla_pro, p.des_pro, dp.lot_pro, dp.cad_pro,  sum(i.cant) as cant, o.des_ori FROM unidades u, inventario i, detalle_productos dp, productos p, origen o where u.cla_uni = i.cla_uni AND i.det_pro = dp.det_pro and i.cant!=0 and dp.cla_pro = p.cla_pro AND dp.id_ori = o.id_ori  and dp.cad_pro < '"+fecha_act+"'  group by p.cla_pro order by p.cla_pro+0 asc");
 		}
 	}
+	if (but.equals("Existencias con 0")){
+		if (lote.equals("on")){
+			rset = stmt.executeQuery("select p.cla_pro, p.des_pro, dp.lot_pro, dp.cad_pro, i.cant, o.des_ori FROM unidades u, inventario i, detalle_productos dp, productos p, origen o where u.cla_uni = i.cla_uni AND i.det_pro = dp.det_pro and dp.cla_pro = p.cla_pro AND dp.id_ori = o.id_ori  and dp.cad_pro < '"+fecha_act+"' order by p.cla_pro+0 asc");
+		} else {
+			rset = stmt.executeQuery("select p.cla_pro, p.des_pro, dp.lot_pro, dp.cad_pro,  sum(i.cant) as cant, o.des_ori FROM unidades u, inventario i, detalle_productos dp, productos p, origen o where u.cla_uni = i.cla_uni AND i.det_pro = dp.det_pro and dp.cla_pro = p.cla_pro AND dp.id_ori = o.id_ori  and dp.cad_pro < '"+fecha_act+"'  group by p.cla_pro order by p.cla_pro+0 asc");
+		}
+	} 
 } catch (Exception e) {
 	System.out.print("not");
 }
@@ -104,7 +111,7 @@ body {
 <body onLoad="foco_inicial();">
 <table width="850" height="346" border="3" align="center" cellpadding="2" bgcolor="#FFFFFF">
   <tr>
-    <td width="650"><form id="form" name="form" method="post" action="inv_lyc.jsp?cla_uni=<%=request.getParameter("cla_uni")%>">
+    <td width="650"><form id="form" name="form" method="post" action="inv_lyc.jsp">
         <a href="index.jsp">Regresar a Menú </a>
         <table width="836" height="227" border="0" align="center" cellpadding="2">
         <tr>
@@ -119,11 +126,13 @@ body {
           <td height="14" colspan="8" bgcolor="#D51045"><span class="style2"><span class="Estilo8"><!--span class="Estilo9">Exportar&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span--><!--img src="icono_excel.gif" border="0" usemap="#Map2"/-->&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></span><span class="Estilo8">&nbsp;&nbsp;<span class="Estilo8"><a href="#Total" class="Estilo8">Ir a Totales</a></span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Exportar a Excel&nbsp;&nbsp;<img src="imagenes/exc.jpg" width="37" height="29" usemap="#Map" border="0" /></span></td>
           </tr>
         <tr>
-          <td height="33">&nbsp;</td>
-          <td class="bodyText" style="text-align:right">Pr&oacute;ximos a Caducar en <input type="text" name="caduca_mes" size="1" value = "" /> meses &nbsp;&nbsp;&nbsp;&nbsp;
-            <input type="checkbox" name="lote" id="lote"  <%if(lote.equals("on")){out.println("checked='checked'");}%>  />
-            <label for="lote" >Separar x Lote</label></td>
-          <td colspan="4" align="center"><input name="submit" type="submit" class="subHeader" value="Omitir Existencias en 0" />&nbsp;&nbsp;<input name="submit" type="submit" class="subHeader" value="Existencias con 0" /></td>
+          <td class="bodyText" style="text-align:right" colspan="2">Pr&oacute;ximos a Caducar en <input type="text" name="caduca_mes" size="1" value = "" /> meses 
+            <input type="checkbox" name="lote" id="lote" <%if(lote.equals("on")){out.println("checked='checked'");}%>  />
+            <label for="lote" >Separar x Lote</label></td><td><input name="submit" type="submit" class="subHeader" value="Lote" /></td>
+          <td colspan="4" align="center">
+		  <input name="submit" type="submit" class="subHeader" value="Omitir Existencias en 0" />&nbsp;&nbsp;
+		  <input name="submit" type="submit" class="subHeader" value="Existencias con 0" />
+		  </td>
           </tr>
         <tr>
           

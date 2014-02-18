@@ -1,6 +1,8 @@
-<%@ page contentType="text/html; charset=iso-8859-1" language="java" import="java.sql.*" errorPage="" %>
+<%@ page contentType="text/html; charset=iso-8859-1" language="java" import="java.sql.*" import="java.text.*" import="java.lang.*" import="java.util.*" import= "javax.swing.*" import="java.io.*" import="java.text.DateFormat" 
+import="java.text.ParseException" import="java.text.DecimalFormat" import="java.text.SimpleDateFormat" import="java.util.Calendar" import="java.util.Date" errorPage="" import ="java.awt.image.BufferedImage" import ="java.io.*" import ="javax.imageio.ImageIO" import ="net.sourceforge.jbarcodebean.*" import ="net.sourceforge.jbarcodebean.model.*" %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <% 
+
 //  Conexión a la BDD -------------------------------------------------------------
 Class.forName("org.gjt.mm.mysql.Driver");
 Connection conn1 = DriverManager.getConnection("jdbc:mysql://localhost/receta_electronica","root","eve9397");
@@ -254,14 +256,14 @@ ban_ima=0;
                 <td width="165" valign="top" bgcolor="#FFFFFF"><table border="0" cellspacing="0" cellpadding="0" width="165" id="navigation">
                     </table>
                     <p class="style1"><a href="pass_abasto.jsp" class="style1">CARGA ABASTO</a></p>
-                    <p class="style1"><a href="inv_lyc.jsp?lote=on&cla_uni=<%=request.getParameter("cve")%>" class="style1">VER EXISTENCIAS</a></p>
-                    <p><a href="index_reporte_consumo.jsp?cla_uni=<%=request.getParameter("cve")%>" class="style1">CONSUMO DIARIO </a></p>
-                    <p class="style1"><a href="index_reporte.jsp?cla_uni=<%=request.getParameter("cve")%>" class="style1">REPORTES VALIDACION</a></p>
+                    <p class="style1"><a href="inv_lyc.jsp?lote=on" class="style1">VER EXISTENCIAS</a></p>
+                    <p><a href="index_reporte_consumo.jsp" class="style1">CONSUMO DIARIO </a></p>
+                    <p class="style1"><a href="index_reporte.jsp" class="style1">REPORTES VALIDACION</a></p>
                     <p><a href="index_movi.jsp" class="style1">MOVIMIENTOS AL INVENTARIO </a></p>
-                    <p><a href="kardex_lc.jsp?cla_uni=<%=request.getParameter("cve")%>" class="style1">KARDEX </a></p>
+                    <p><a href="kardex_lc.jsp" class="style1">KARDEX </a></p>
                     <p><a href="pass_compras.jsp" class="style1">REPOSICION/VENTAS</a></p>
-                    <p><a href="ver_receta.jsp?cla_uni=<%=request.getParameter("cve")%>" class="style1">VER RECETA FARMACIA </a></p>
-                    <p><a href="ver_receta_col.jsp?cla_uni=<%=request.getParameter("cve")%>" class="style1">VER RECETA COLECTIVA </a>      </p>
+                    <p><a href="ver_receta.jsp" class="style1">VER RECETA FARMACIA </a></p>
+                    <p><a href="ver_receta_col.jsp" class="style1">VER RECETA COLECTIVA </a>      </p>
 
                     <p><a href="index_menu_receta.jsp" class="style1">MODIFICAR RECETA </a>      </p>
                     <p><a href="pass_nivel.jsp" class="style1">NIVEL DE SERVICIO EN FARMACIA </a>      <!--p><a href="rep_reabastecimiento.jsp" class="style1">REPORTE DE REABASTO </a></p-->

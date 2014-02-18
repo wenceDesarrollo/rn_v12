@@ -128,13 +128,8 @@ doce {
             Ingrese No. Folio:
           <input name="fol_rec" type="text" class="style13"  value="<%=fol_rec%>" size="15" onKeyPress="return handleEnter(this, event)"/>
           <label for="select"></label>
-          <select name="slct_fol" id="slct_fol" onChange="putFolio();">
-            <option>-- Folios --</option>
-          
-                <option value=""></option>
-         
-          </select>
-          &nbsp;<input name="submit" type="submit" class="subHeader" value="Por Folio"/>
+          &nbsp;
+          <input name="submit" type="submit" class="subHeader" value="Por Folio"/>
           <input name="act" type="submit" value="ACT" /></td>
           <td width="167"><table width="167" height="0%" border="0" cellpadding="2">
             <tr>

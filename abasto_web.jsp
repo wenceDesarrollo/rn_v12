@@ -21,7 +21,7 @@
 /*parametros para la conexión*/
     String driver = "org.gjt.mm.mysql.Driver";
     String url_con = "jdbc:mysql://189.197.187.15:3306/abastos";
-    String url_con2 = "jdbc:mysql://localhost:3306/r_nayarit";
+    String url_con2 = "jdbc:mysql://localhost:3306/receta_electronica";
     String user_con = "root";
     String pass_con = "eve9397";
     String mensaje = "";
@@ -49,6 +49,7 @@
 %>
 <%
 	String user = request.getParameter("id_usu");
+	String cla_uni = request.getParameter("cla_uni");
     String usuario = "", but = "", folio = "", clave = "", descrip = "", lote = "", cad = "", cant = "", cantent = "", ori = "", id_abasto = "", accion = "", id_ab = "", surtido = "", nom_abasto = "";
     int ban = 0, ban_error = 0;
     try {
@@ -90,7 +91,11 @@
                 ori = rset.getString(7);
                 id_abasto = rset.getString(8);
 
-                stmt2.execute("insert into modificacion_abastos values('" + folio + "', '" + clave + "', '" + descrip + "', '" + lote + "', '" + cad + "', '" + cant + "','" + cantent + "', '" + ori + "', '" + df.format(new java.util.Date()) + "', '" + df2.format(new java.util.Date()) + "', 'ELIMINACION', '0','-','-','-','-')");
+				try{
+                stmt2.execute("insert into modificacion_abastos values('" + folio + "', '" + clave + "', '" + descrip + "', '" + lote + "', '" + cad + "', '" + cant + "','" + cantent + "', '" + ori + "', '" + df.format(new java.util.Date()) + "', '" + df2.format(new java.util.Date()) + "', 'ELIMINACION', '0','-','-','-','-', '0')");
+				}catch(Exception e){
+				out.println(e.getMessage());
+				}
 
             }
 
@@ -146,6 +151,13 @@
             carpeta = "c:/abastos_web/abasto_" + folio + "_" + df.format(new java.util.Date()) + "";
             //out.print(carpeta);
             file = new File(carpeta);
+			//---------------------------------
+			File fichero = new File("c:/abastos_web/abasto_" + folio + "_" + df.format(new java.util.Date()) + "/" + nom_abasto );
+			if (fichero.delete()){
+			}
+			else
+			   System.out.println("El fichero no puede ser borrado");
+			//---------------------------------
             directorio = file.mkdir();
             //----------------------------------------------------------------------------------------------------------------------
 
@@ -160,13 +172,14 @@
 %>
 <script>
     alert("Abasto Web Ya generado");
-    self.location = 'abasto_web.jsp?folio=<%=folio%>&Submit=Folio';
+	alert("<%=e.getMessage()%>");
+    self.location = 'abasto_web.jsp?id_usu=<%=user%>&cla_uni=<%=cla_uni%>';
 </script>
 <%
     }
 %>
 <script>
-    self.location = 'csv_abasto.jsp?archivo=c:/abastos_web/abasto_<%=(folio+"_"+df.format(new java.util.Date()))%>/<%=nom_abasto%>&token=<%=nom_abasto%>&id_usu=<%=user%>&folio=<%=folio%>';
+    self.location = 'csv_abasto.jsp?archivo=c:/abastos_web/abasto_<%=(folio+"_"+df.format(new java.util.Date()))%>/<%=nom_abasto%>&token=<%=nom_abasto%>&id_usu=<%=user%>&folio=<%=folio%>&cla_uni=<%=cla_uni%>';
 </script>
 <%
 
@@ -217,7 +230,7 @@
     <div style="width:800; height:10; background-color:#F00">&nbsp;</div>
     <br/><br/>
 
-    <form id="form1" name="form1" method="post" action="abasto_web.jsp?id_usu=<%=user%>">
+    <form id="form1" name="form1" method="post" action="abasto_web.jsp?id_usu=<%=user%>&cla_uni=<%=cla_uni%>">
         Ingrese el Folio:
         <input type="text" name="folio" id="folio" value="<%=folio%>"/>
         <input type="submit" name="Submit" id="Submit" value="Folio"/>
@@ -277,12 +290,12 @@
         %>
         <tr>
             <td>
-                <a href="edita_clave_abasto.jsp?id_abasto=<%=id_abasto%>&folio=<%=folio%>"><img src="imagenes/edit.png"
+                <a href="edita_clave_abasto.jsp?id_abasto=<%=id_abasto%>&folio=<%=folio%>&id_usu=<%=user%>&cla_uni=<%=cla_uni%>"><img src="imagenes/edit.png"
                                                                                                 width="20" height="20"/></a>
             </td>
             <td>
                 <a onClick="return confirm('Estas seguro de Eliminarla?')"
-                   href="abasto_web.jsp?id_abasto=<%=id_abasto%>&folio=<%=folio%>&Submit=Folio&Accion=Eliminar"><img
+                   href="abasto_web.jsp?id_abasto=<%=id_abasto%>&folio=<%=folio%>&Submit=Folio&Accion=Eliminar&id_usu=<%=user%>&cla_uni=<%=cla_uni%>"><img
                         src="imagenes/Delete-icon.png" width="20" height="20"/></a>
             </td>
             <td><%=clave%>
@@ -307,7 +320,7 @@
         %>
         <script>
             alert("Folio Inexistente");
-            location.href = "abasto_web.jsp";
+            location.href = "abasto_web.jsp?id_usu=<%=user%>&cla_uni=<%=cla_uni%>";
         </script>
         <%
             }
@@ -315,7 +328,7 @@
         %>
         <script>
             alert("Folio ya cargado");
-            location.href = "abasto_web.jsp";
+            location.href = "abasto_web.jsp?id_usu=<%=user%>&cla_uni=<%=cla_uni%>";
         </script>
         <%
                 }
@@ -324,7 +337,7 @@
         %>
         <script>
             alert("Favor de ingresar un Folio");
-            location.href = "abasto_web.jsp";
+            location.href = "abasto_web.jsp?id_usu=<%=user%>&cla_uni=<%=cla_uni%>";
         </script>
         <%
                 }

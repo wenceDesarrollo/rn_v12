@@ -152,11 +152,8 @@ dd {
           <td width="91" height="55"><label></label>
             
             <span class="style2">INGRESE FOLIO:</span>
-          <td width="346" class="style2"><input type="text" name="fol_rec" size="15" class="Estilo5"  value="<%=fol_rec%>" /><select name="slct_fol" id="slct_fol" onChange="putFolio();">
-            <option>-- Folios --</option>
-            <option value=""></option>
-         
-          </select><input name="submit" type="submit" class="subHeader" value="Por Folio"/> <input name="act" type="submit" value="ACT" />            
+          <td width="346" class="style2"><input type="text" name="fol_rec" size="15" class="Estilo5"  value="<%=fol_rec%>" />
+            <input name="submit" type="submit" class="subHeader" value="Por Folio"/> <input name="act" type="submit" value="ACT" />            
           <label>          </label></td>
           <td width="173"><span class="style2">HORA:</span>            <input name="reloj" type="text"  class="Estilo5" onKeyPress="return handleEnter(this, event)" value="<%=hor_car%>" size="15" readonly ></td>
           <td width="276" align="left" class="style2">FECHA
